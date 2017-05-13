@@ -1,0 +1,3 @@
+ADD_EXECUTABLE(rlimit "rlimit.c")
+
+INCLUDE_DIRECTORIES(.)
