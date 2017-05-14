@@ -26,7 +26,7 @@ Scanner::Scanner() : filesystem_(new Filesystem()), mlocker_(new MLocker()) {}
 Scanner::~Scanner() {}
 
 void Scanner::SetPaths(std::vector<std::string> paths) {
-    paths_ = std::move(paths);
+    pending_paths_ = std::move(paths);
 }
 
 void Scanner::Run() {
@@ -34,8 +34,19 @@ void Scanner::Run() {
     using std::placeholders::_2;
     const auto& callback = std::bind(&Scanner::Walk, this, _1, _2);
 
-    for (const auto& path : paths_) {
-        filesystem_->Walk(path, callback);
+    // We allow our Walk function to build up additional paths for us to scan.
+    // To avoid iterator invalidation issues, we move the contents of the
+    // member variable into a stack variable and build up additional work items
+    // in pending_paths_.
+    std::vector<std::string> paths;
+    while (!pending_paths_.empty()) {
+        paths.swap(pending_paths_);
+
+        for (const auto& path : paths) {
+            filesystem_->Walk(path, callback);
+        }
+
+        paths.clear();
     }
 
     // TODO:  Configure inotify

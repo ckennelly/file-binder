@@ -45,7 +45,7 @@ private:
     std::unique_ptr<Filesystem> filesystem_;
     std::unique_ptr<MLocker> mlocker_;
 
-    std::vector<std::string> paths_;
+    std::vector<std::string> pending_paths_;
     // Mapping of paths to mlock tokens.
     std::unordered_map<std::string, std::unique_ptr<MLocker::Token>> locks_;
 };
