@@ -186,7 +186,7 @@ TEST(MLocker, Locked) {
         ret = fstat(fd, &s);
     } while (ret < 0 && errno == EINTR);
     ASSERT_EQ(0, ret);
-    ASSERT_EQ(multiples * page_size, ret.st_size);
+    ASSERT_EQ(multiples * page_size, s.st_size);
 
     // Mlock
     {
