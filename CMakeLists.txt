@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 # Warnings
-SET(WARNINGS "-Wall -Wextra -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wredundant-decls -Winline -Wuninitialized -Werror -Wno-missing-field-initializers")
+SET(WARNINGS "-Wall -Wextra -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wredundant-decls -Winline -Wuninitialized -Werror -Wno-missing-field-initializers -Wno-unused-parameter")
 SET(CMAKE_CXX_FLAGS "${WARNINGS} -Wnon-virtual-dtor -g")
 
 # C++11 support
