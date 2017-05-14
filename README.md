@@ -16,7 +16,8 @@ restored.
 Building
 ========
 
-File Binder depends on `bazel` (https://github.com/bazelbuild/bazel).
+File Binder depends on `bazel` (https://github.com/bazelbuild/bazel) and
+`googletest` (https://github.com/google/googletest).
 
 The `rlimit` utility is meant to be setuid for `root` to increase the memory
 lock limit available to the process.
