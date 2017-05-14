@@ -16,7 +16,7 @@ restored.
 Building
 ========
 
-File Binder depends on cmake.
+File Binder depends on `bazel` (https://github.com/bazelbuild/bazel).
 
 The `rlimit` utility is meant to be setuid for `root` to increase the memory
 lock limit available to the process.
