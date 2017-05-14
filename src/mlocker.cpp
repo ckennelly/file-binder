@@ -59,6 +59,7 @@ MLocker::Token::Token(const std::string& path) : addr_(nullptr), size_(0) {
 
     ::close(fd);
 
+    // MAP_LOCKED is not as strong as mlock.
     // TODO: Check this return value.
     ::mlock(addr_, size_);
 }
