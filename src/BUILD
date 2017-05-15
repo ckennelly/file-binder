@@ -9,7 +9,29 @@ cc_library(
         "scanner.cpp",
     ],
     deps = [
+        ":elf_parser",
         ":mlocker",
+    ],
+)
+
+cc_library(
+    name = "elf_parser",
+    hdrs = ["elf_parser.h"],
+    srcs = ["elf_parser.cc"],
+)
+
+cc_test(
+    name = "elf_parser_test",
+    srcs = ["elf_parser_test.cc"],
+    deps = [
+        ":elf_parser",
+        "//third_party:gtest_main",
+    ],
+    data = [
+        "//src/testdata:hello_x64_dyn",
+        "//src/testdata:hello_x64_static",
+        "//src/testdata:hello_x86_dyn",
+        "//src/testdata:hello_x86_static",
     ],
 )
 

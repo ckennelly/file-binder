@@ -18,7 +18,14 @@
 
 #include "scanner.h"
 
+#include <cassert>
+#include <cstdint>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
+
+#include "elf_parser.h"
 
 namespace file_binder {
 
@@ -39,11 +46,15 @@ void Scanner::Run() {
     // member variable into a stack variable and build up additional work items
     // in pending_paths_.
     std::vector<std::string> paths;
-    while (!pending_paths_.empty()) {
-        paths.swap(pending_paths_);
+    while (true) {
+        while (!pending_paths_.empty()) {
+            paths.swap(pending_paths_);
 
-        for (const auto& path : paths) {
-            filesystem_->Walk(path, callback);
+            for (const auto& path : paths) {
+                filesystem_->Walk(path, callback);
+            }
+
+            paths.clear();
         }
 
         paths.clear();
@@ -62,7 +73,34 @@ void Scanner::Walk(const std::string& path, const struct stat& buf) {
         return;
     }
 
-    // TODO:  Scan ELF-type files for their runtime dependencies.
+    // Scan ELF-type files for their runtime dependencies.
+    {
+        int fd;
+        do {
+            fd = open(path.c_str(), O_RDONLY);
+        } while (fd < 0 && errno != EINTR);
+
+        if (fd >= 0) {
+            try {
+                ElfParser elf(fd);
+
+                std::string interpreter;
+                bool has_interpreter = elf.GetInterpreter(&interpreter);
+                if (has_interpreter) {
+                    pending_paths_.emplace_back(std::move(interpreter));
+                }
+
+                std::vector<std::string> deps = elf.GetLibraryDependencies();
+                pending_paths_.insert(
+                    pending_paths_.begin(), deps.begin(), deps.end());
+            } catch (ElfError& ex) {
+                // Ignore.
+            }
+
+            close(fd);
+        }
+    }
+
     // TODO:  Insert dependencies into inotify watch.
 
     // Lock file into memory, hold a reference to it.
